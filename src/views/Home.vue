@@ -2,20 +2,13 @@
   <div class="home-container">
     <div class="search-container">
       <h1 class="title">Stock Fundamental Research</h1>
-      <SearchBar @search="handleSearch" />
-      <div v-if="loading" class="loading">Searching...</div>
+      <SearchBar 
+        :searchResults="searchResults" 
+        :loading="loading"
+        @search="handleSearch"
+        @select="handleStockSelect"
+      />
       <div v-if="error" class="error">{{ error }}</div>
-      <div v-if="searchResults && searchResults.length > 0" class="search-results">
-        <div 
-          v-for="stock in searchResults" 
-          :key="stock.symbol" 
-          class="stock-result"
-          @click="selectStock(stock.symbol)"
-        >
-          <div class="stock-symbol">{{ stock.symbol }}</div>
-          <div class="stock-name">{{ stock.name || stock.symbol }}</div>
-        </div>
-      </div>
     </div>
   </div>
 </template>
@@ -48,16 +41,19 @@ export default {
       this.searchResults = []
 
       try {
-        const results = await stockService.searchStocks(query.trim())
-        this.searchResults = results
+        const response = await stockService.searchStocks(query.trim())
+        // Handle the API response structure with result array
+        this.searchResults = response.result || response || []
       } catch (error) {
         this.error = 'Failed to search stocks. Please try again.'
         console.error('Search error:', error)
+        this.searchResults = []
       } finally {
         this.loading = false
       }
     },
-    selectStock(symbol) {
+    handleStockSelect(stock) {
+      const symbol = stock.symbol || stock.displaySymbol
       if (symbol && symbol.trim()) {
         this.$router.push({ name: 'StockDetail', params: { symbol: symbol.toUpperCase().trim() } })
       }
@@ -89,12 +85,6 @@ export default {
   letter-spacing: -0.5px;
 }
 
-.loading {
-  margin-top: 20px;
-  color: #666;
-  font-size: 16px;
-}
-
 .error {
   margin-top: 20px;
   color: #dc2626;
@@ -102,45 +92,6 @@ export default {
   padding: 12px;
   background: #fee2e2;
   border-radius: 8px;
-}
-
-.search-results {
-  margin-top: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  max-height: 400px;
-  overflow-y: auto;
-}
-
-.stock-result {
-  background: white;
-  padding: 16px 20px;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.2s;
-  border: 1px solid #e0e0e0;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.stock-result:hover {
-  background: #f3f4f6;
-  border-color: #2563eb;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-.stock-symbol {
-  font-weight: 600;
-  font-size: 18px;
-  color: #1a1a1a;
-}
-
-.stock-name {
-  font-size: 14px;
-  color: #666;
 }
 </style>
 
