@@ -1,23 +1,30 @@
 <template>
   <div class="search-wrapper" ref="searchWrapper">
     <div class="search-box" :class="{ 'search-box-focused': isFocused }">
-      <input 
-        type="text" 
-        v-model="localQuery" 
+      <div class="search-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/>
+          <path d="M21 21l-4.35-4.35"/>
+        </svg>
+      </div>
+      <input
+        type="text"
+        v-model="localQuery"
         @focus="isFocused = true"
         @blur="handleBlur"
         @keydown.down.prevent="navigateDown"
         @keydown.up.prevent="navigateUp"
         @keydown.enter.prevent="selectHighlighted"
-        placeholder="Enter stock symbol (e.g., AAPL, MSFT, TSLA)"
+        placeholder="Search by symbol or company name..."
         class="search-input"
       />
     </div>
-    <div 
-      v-if="showDropdown && (searchResults.length > 0 || loading)" 
+    <div
+      v-if="showDropdown && (searchResults.length > 0 || loading)"
       class="dropdown"
     >
       <div v-if="loading" class="dropdown-item loading-item">
+        <div class="loading-dot"></div>
         <span>Searching...</span>
       </div>
       <div
@@ -65,27 +72,22 @@ export default {
   },
   watch: {
     localQuery(newValue) {
-      // Reset highlighted index when query changes
       this.highlightedIndex = -1
-      
-      // Clear existing timer
+
       if (this.debounceTimer) {
         clearTimeout(this.debounceTimer)
       }
-      
-      // Set new timer to debounce the search
+
       this.debounceTimer = setTimeout(() => {
         this.$emit('search', newValue)
-      }, 300) // 300ms debounce delay
+      }, 300)
     },
     searchResults() {
-      // Reset highlighted index when results change
       this.highlightedIndex = -1
     }
   },
   methods: {
     handleBlur() {
-      // Delay hiding dropdown to allow click events to fire
       this.blurTimeout = setTimeout(() => {
         this.isFocused = false
       }, 200)
@@ -112,7 +114,6 @@ export default {
     }
   },
   beforeUnmount() {
-    // Clean up timers on component destruction
     if (this.debounceTimer) {
       clearTimeout(this.debounceTimer)
     }
@@ -131,31 +132,37 @@ export default {
 
 .search-box {
   display: flex;
+  align-items: center;
   background: white;
   border-radius: 12px;
-  padding: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  border: 1px solid #e0e0e0;
+  padding: 4px;
+  box-shadow: var(--shadow-lg);
+  border: 2px solid transparent;
   transition: all 0.2s;
 }
 
 .search-box-focused {
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-  border-color: #2563eb;
+  border-color: var(--color-primary-400);
+  box-shadow: var(--shadow-lg), 0 0 0 4px var(--color-primary-100);
+}
+
+.search-icon {
+  padding: 12px 8px 12px 16px;
+  color: var(--color-gray-400);
 }
 
 .search-input {
   flex: 1;
-  padding: 16px 20px;
+  padding: 16px 20px 16px 8px;
   font-size: 16px;
   border: none;
   outline: none;
   background: transparent;
-  color: #1a1a1a;
+  color: var(--color-gray-900);
 }
 
 .search-input::placeholder {
-  color: #999;
+  color: var(--color-gray-400);
 }
 
 .dropdown {
@@ -163,27 +170,24 @@ export default {
   top: 100%;
   left: 0;
   right: 0;
-  margin-top: 4px;
+  margin-top: 8px;
   background: white;
-  border-radius: 8px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-  border: 1px solid #e0e0e0;
-  max-height: 300px;
+  border-radius: 12px;
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--color-gray-200);
+  max-height: 320px;
   overflow-y: auto;
   z-index: 1000;
 }
 
 .dropdown-item {
-  padding: 8px 16px;
+  padding: 12px 16px;
   cursor: pointer;
   display: flex;
   align-items: center;
   gap: 12px;
   transition: background-color 0.1s;
-  border-bottom: 1px solid #f0f0f0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  border-bottom: 1px solid var(--color-gray-100);
 }
 
 .dropdown-item:last-child {
@@ -192,26 +196,43 @@ export default {
 
 .dropdown-item:hover,
 .dropdown-item.highlighted {
-  background-color: #f5f5f5;
+  background-color: var(--color-primary-50);
 }
 
 .dropdown-item.loading-item {
   cursor: default;
-  color: #666;
+  color: var(--color-gray-500);
   justify-content: center;
+}
+
+.loading-dot {
+  width: 8px;
+  height: 8px;
+  background: var(--color-primary-500);
+  border-radius: 50%;
+  animation: pulse 1s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
 }
 
 .stock-symbol {
   font-weight: 600;
   font-size: 14px;
-  color: #1a1a1a;
-  min-width: 60px;
+  color: var(--color-gray-900);
+  min-width: 70px;
   flex-shrink: 0;
 }
 
 .stock-description {
   font-size: 13px;
-  color: #666;
+  color: var(--color-gray-600);
   flex: 1;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -220,10 +241,14 @@ export default {
 
 .stock-type {
   font-size: 11px;
-  color: #999;
+  color: var(--color-primary-600);
+  background: var(--color-primary-50);
+  padding: 3px 8px;
+  border-radius: 4px;
   flex-shrink: 0;
   text-transform: uppercase;
   letter-spacing: 0.3px;
+  font-weight: 500;
 }
 
 /* Scrollbar styling */
@@ -232,17 +257,16 @@ export default {
 }
 
 .dropdown::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: var(--color-gray-100);
   border-radius: 4px;
 }
 
 .dropdown::-webkit-scrollbar-thumb {
-  background: #c1c1c1;
+  background: var(--color-gray-300);
   border-radius: 4px;
 }
 
 .dropdown::-webkit-scrollbar-thumb:hover {
-  background: #a8a8a8;
+  background: var(--color-gray-400);
 }
 </style>
-
