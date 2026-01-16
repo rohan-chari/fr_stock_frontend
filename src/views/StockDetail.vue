@@ -44,9 +44,22 @@
 
       <div v-else-if="stockData" class="stock-content">
         <header class="stock-header">
-          <div class="stock-title-section">
-            <div class="symbol-badge">{{ stockData.stockSymbol || symbol }}</div>
-            <p class="stock-stats">{{ stockData.totalPosts || 0 }} posts · {{ stockData.totalComments || 0 }} comments analyzed</p>
+          <div class="header-main">
+            <div class="ticker-section">
+              <h1 class="ticker-symbol">{{ stockData.stockSymbol || symbol }}</h1>
+              <span class="ticker-label">Social Sentiment Analysis</span>
+            </div>
+            <div class="header-stats">
+              <div class="stat-item">
+                <span class="stat-value">{{ formatNumber(stockData.totalPosts || 0) }}</span>
+                <span class="stat-label">Posts</span>
+              </div>
+              <div class="stat-divider"></div>
+              <div class="stat-item">
+                <span class="stat-value">{{ formatNumber(stockData.totalComments || 0) }}</span>
+                <span class="stat-label">Comments</span>
+              </div>
+            </div>
           </div>
         </header>
 
@@ -138,6 +151,15 @@ export default {
       } finally {
         this.loading = false
       }
+    },
+    formatNumber(num) {
+      if (num >= 1000000) {
+        return (num / 1000000).toFixed(1).replace(/\.0$/, '') + 'M'
+      }
+      if (num >= 1000) {
+        return (num / 1000).toFixed(1).replace(/\.0$/, '') + 'K'
+      }
+      return num.toLocaleString()
     }
   }
 }
@@ -327,25 +349,72 @@ export default {
 }
 
 .stock-header {
-  padding: 32px;
-  background: linear-gradient(135deg, var(--color-gray-900) 0%, var(--color-gray-800) 100%);
+  padding: 28px 32px;
+  background: white;
+  border-bottom: 1px solid var(--color-gray-100);
 }
 
-.symbol-badge {
-  display: inline-block;
-  font-size: 28px;
+.header-main {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.ticker-section {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.ticker-symbol {
+  font-size: 32px;
   font-weight: 700;
-  color: white;
-  background: var(--color-primary-600);
-  padding: 8px 20px;
-  border-radius: 8px;
-  letter-spacing: 0.5px;
-  margin-bottom: 12px;
+  color: var(--color-gray-900);
+  letter-spacing: -0.5px;
+  line-height: 1;
+  margin: 0;
 }
 
-.stock-stats {
-  font-size: 14px;
-  color: var(--color-gray-400);
+.ticker-label {
+  font-size: 13px;
+  color: var(--color-gray-500);
+  font-weight: 500;
+}
+
+.header-stats {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+.stat-value {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--color-gray-900);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.stat-label {
+  font-size: 12px;
+  color: var(--color-gray-500);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.stat-divider {
+  width: 1px;
+  height: 36px;
+  background: var(--color-gray-200);
 }
 
 /* Tab Content */
@@ -386,12 +455,35 @@ export default {
   }
 
   .stock-header {
-    padding: 24px;
+    padding: 20px;
   }
 
-  .symbol-badge {
-    font-size: 22px;
-    padding: 6px 16px;
+  .header-main {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+  }
+
+  .ticker-symbol {
+    font-size: 28px;
+  }
+
+  .header-stats {
+    width: 100%;
+    justify-content: flex-start;
+    gap: 24px;
+  }
+
+  .stat-item {
+    align-items: flex-start;
+  }
+
+  .stat-value {
+    font-size: 20px;
+  }
+
+  .stat-divider {
+    height: 32px;
   }
 
   .tab-content {

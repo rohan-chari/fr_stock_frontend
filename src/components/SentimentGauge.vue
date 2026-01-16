@@ -5,42 +5,21 @@
       <span class="sentiment-value" :class="sentimentClass">{{ sentimentLabel }}</span>
     </div>
     <div class="gauge-container">
-      <div class="bear-icon">
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" fill="none"/>
-          <circle cx="6" cy="6" r="2.5"/>
-          <circle cx="18" cy="6" r="2.5"/>
-          <ellipse cx="12" cy="14" rx="8" ry="7"/>
-          <circle cx="8.5" cy="12" r="1.5" fill="white"/>
-          <circle cx="15.5" cy="12" r="1.5" fill="white"/>
-          <ellipse cx="12" cy="16" rx="3" ry="1.5" fill="#1f2937"/>
-          <path d="M9 14.5 Q12 13 15 14.5" stroke="#1f2937" stroke-width="1.5" fill="none"/>
-        </svg>
-      </div>
+      <span class="gauge-label-end bearish-label">Bearish</span>
       <div class="gauge-track">
-        <div class="gauge-fill-negative" :style="{ width: negativeFillWidth }"></div>
-        <div class="gauge-fill-positive" :style="{ width: positiveFillWidth }"></div>
-        <div class="gauge-center"></div>
         <div
-          class="gauge-indicator"
-          :style="{ left: indicatorPosition }"
+          class="gauge-fill-negative"
           :class="{ animated: isAnimated }"
-        >
-          <div class="indicator-dot"></div>
-        </div>
+          :style="{ width: negativeFillWidth }"
+        ></div>
+        <div
+          class="gauge-fill-positive"
+          :class="{ animated: isAnimated }"
+          :style="{ width: positiveFillWidth }"
+        ></div>
+        <div class="gauge-center-line"></div>
       </div>
-      <div class="bull-icon">
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M2 8 L5 4 L7 7" stroke="currentColor" stroke-width="2" fill="none"/>
-          <path d="M22 8 L19 4 L17 7" stroke="currentColor" stroke-width="2" fill="none"/>
-          <ellipse cx="12" cy="14" rx="8" ry="7"/>
-          <circle cx="8.5" cy="12" r="1.5" fill="white"/>
-          <circle cx="15.5" cy="12" r="1.5" fill="white"/>
-          <ellipse cx="12" cy="17" rx="2.5" ry="1.5" fill="#f8fafc"/>
-          <circle cx="11" cy="17" r="0.5" fill="#1f2937"/>
-          <circle cx="13" cy="17" r="0.5" fill="#1f2937"/>
-        </svg>
-      </div>
+      <span class="gauge-label-end bullish-label">Bullish</span>
     </div>
   </div>
 </template>
@@ -63,10 +42,6 @@ export default {
   computed: {
     normalizedSentiment() {
       return Math.max(-1, Math.min(1, this.displaySentiment))
-    },
-    indicatorPosition() {
-      const percentage = ((this.normalizedSentiment + 1) / 2) * 100
-      return `${percentage}%`
     },
     negativeFillWidth() {
       if (this.normalizedSentiment >= 0) return '0%'
@@ -114,7 +89,7 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 14px;
+  margin-bottom: 16px;
 }
 
 .label-text {
@@ -150,28 +125,32 @@ export default {
 .gauge-container {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
 }
 
-.bear-icon {
+.gauge-label-end {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  flex-shrink: 0;
+}
+
+.bearish-label {
   color: var(--color-error);
-  flex-shrink: 0;
-  opacity: 0.9;
 }
 
-.bull-icon {
+.bullish-label {
   color: var(--color-success);
-  flex-shrink: 0;
-  opacity: 0.9;
 }
 
 .gauge-track {
   flex: 1;
-  height: 8px;
+  height: 20px;
   background: var(--color-gray-200);
-  border-radius: 4px;
+  border-radius: 10px;
   position: relative;
-  overflow: visible;
+  overflow: hidden;
 }
 
 .gauge-fill-negative {
@@ -179,9 +158,13 @@ export default {
   right: 50%;
   top: 0;
   height: 100%;
-  background: linear-gradient(to left, var(--color-gray-200), var(--color-error));
-  border-radius: 4px 0 0 4px;
-  transition: width 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+  width: 0%;
+  background: var(--color-error);
+  border-radius: 10px 0 0 10px;
+}
+
+.gauge-fill-negative.animated {
+  transition: width 0.6s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .gauge-fill-positive {
@@ -189,40 +172,23 @@ export default {
   left: 50%;
   top: 0;
   height: 100%;
-  background: linear-gradient(to right, var(--color-gray-200), var(--color-success));
-  border-radius: 0 4px 4px 0;
-  transition: width 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+  width: 0%;
+  background: var(--color-success);
+  border-radius: 0 10px 10px 0;
 }
 
-.gauge-center {
+.gauge-fill-positive.animated {
+  transition: width 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.gauge-center-line {
   position: absolute;
   left: 50%;
-  top: -4px;
+  top: 0;
   width: 2px;
-  height: 16px;
+  height: 100%;
   background: var(--color-gray-400);
   transform: translateX(-50%);
-  border-radius: 1px;
-}
-
-.gauge-indicator {
-  position: absolute;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  transition: none;
-}
-
-.gauge-indicator.animated {
-  transition: left 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.indicator-dot {
-  width: 20px;
-  height: 20px;
-  background: white;
-  border: 3px solid var(--color-primary-500);
-  border-radius: 50%;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 @media (max-width: 768px) {
@@ -231,13 +197,24 @@ export default {
   }
 
   .gauge-container {
-    gap: 12px;
+    gap: 8px;
   }
 
-  .bear-icon svg,
-  .bull-icon svg {
-    width: 24px;
-    height: 24px;
+  .gauge-label-end {
+    font-size: 10px;
+  }
+
+  .gauge-track {
+    height: 16px;
+    border-radius: 8px;
+  }
+
+  .gauge-fill-negative {
+    border-radius: 8px 0 0 8px;
+  }
+
+  .gauge-fill-positive {
+    border-radius: 0 8px 8px 0;
   }
 }
 </style>
