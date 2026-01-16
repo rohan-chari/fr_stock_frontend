@@ -12,6 +12,7 @@
       </router-link>
       <nav class="nav-links">
         <router-link to="/" class="nav-link">Home</router-link>
+        <router-link to="/admin" class="nav-link">Admin</router-link>
       </nav>
     </div>
   </header>
