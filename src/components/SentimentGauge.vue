@@ -5,7 +5,10 @@
       <span class="sentiment-value" :class="sentimentClass">{{ sentimentLabel }}</span>
     </div>
     <div class="gauge-container">
-      <span class="gauge-label-end bearish-label">Bearish</span>
+      <div class="bearish-section">
+        <img src="@/images/bear.png" alt="Bear" class="bear-icon" />
+        <span class="gauge-label-end bearish-label">Bearish</span>
+      </div>
       <div class="gauge-track">
         <div
           class="gauge-fill-negative"
@@ -19,7 +22,10 @@
         ></div>
         <div class="gauge-center-line"></div>
       </div>
-      <span class="gauge-label-end bullish-label">Bullish</span>
+      <div class="bullish-section">
+        <img src="@/images/bull.png" alt="Bull" class="bull-icon" />
+        <span class="gauge-label-end bullish-label">Bullish</span>
+      </div>
     </div>
   </div>
 </template>
@@ -144,6 +150,21 @@ export default {
   color: var(--color-success);
 }
 
+.bearish-section,
+.bullish-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.bear-icon,
+.bull-icon {
+  width: 32px;
+  height: 24px;
+}
+
 .gauge-track {
   flex: 1;
   height: 20px;
@@ -215,6 +236,17 @@ export default {
 
   .gauge-fill-positive {
     border-radius: 0 8px 8px 0;
+  }
+
+  .bear-icon,
+  .bull-icon {
+    width: 24px;
+    height: 18px;
+  }
+
+  .bearish-section,
+  .bullish-section {
+    gap: 2px;
   }
 }
 </style>
