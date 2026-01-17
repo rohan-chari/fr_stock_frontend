@@ -6,7 +6,7 @@
     </div>
     <div class="gauge-container">
       <div class="bearish-section">
-        <img src="@/assets/bear.svg" alt="Bear" class="bear-icon" />
+        <img src="@/images/bear.png" alt="Bear" class="bear-icon" />
         <span class="gauge-label-end bearish-label">Bearish</span>
       </div>
       <div class="gauge-track">
@@ -23,7 +23,7 @@
         <div class="gauge-center-line"></div>
       </div>
       <div class="bullish-section">
-        <img src="@/assets/bull.svg" alt="Bull" class="bull-icon" />
+        <img src="@/images/bull.png" alt="Bull" class="bull-icon" />
         <span class="gauge-label-end bullish-label">Bullish</span>
       </div>
     </div>
